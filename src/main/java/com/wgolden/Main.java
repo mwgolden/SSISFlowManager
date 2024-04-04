@@ -41,7 +41,7 @@ public class Main {
                     .folderName("projects")
                     .projectName("myssisproject")
                     .packageName("Package.dtsx")
-                    .createExecution(executionManager)
+                    .ssisExecutionManager(executionManager)
                     .build();
 
             executionManager.startExecution(ssisExecution);
