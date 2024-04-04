@@ -29,7 +29,7 @@ public class Main {
         datasource.setPortNumber(Integer.parseInt(props.getProperty("ssisdb.port")));
         datasource.setDatabaseName(props.getProperty("ssisdb.database"));
         datasource.setUser(System.getenv("MSSQLUSER"));
-       datasource.setPassword(System.getenv("MSSQLPASS"));
+        datasource.setPassword(System.getenv("MSSQLPASS"));
         datasource.setIntegratedSecurity(true);
         datasource.setTrustServerCertificate(true);
         datasource.setAuthenticationScheme("NTLM");
@@ -41,7 +41,7 @@ public class Main {
                     .folderName("projects")
                     .projectName("myssisproject")
                     .packageName("Package.dtsx")
-                    .createExecution()
+                    .createExecution(ssisdbManager)
                     .build();
 
             ssisdbManager.startExecution(ssisExecution);

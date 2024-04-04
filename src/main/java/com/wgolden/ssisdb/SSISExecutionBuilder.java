@@ -43,8 +43,7 @@ public class SSISExecutionBuilder {
         this.use32BitRuntime = use32BitRuntime;
         return this;
     }
-    public SSISExecutionBuilder createExecution() throws SQLException{
-        SSISDBManager ssisdbManager = SSISDBManager.getInstance();
+    public SSISExecutionBuilder createExecution(SSISDBManager ssisdbManager) throws SQLException{
         this.executionId = ssisdbManager.createExecution(
                 this.dataSource,
                 this.folderName,
