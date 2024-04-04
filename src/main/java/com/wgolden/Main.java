@@ -1,9 +1,8 @@
 package com.wgolden;
 
 import com.microsoft.sqlserver.jdbc.*;
-import com.wgolden.ssisdb.Execution;
-import com.wgolden.ssisdb.Project;
 import com.wgolden.ssisdb.SSISDBManager;
+import com.wgolden.ssisdb.SSISExecutionBuilder;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -30,16 +29,23 @@ public class Main {
         datasource.setPortNumber(Integer.parseInt(props.getProperty("ssisdb.port")));
         datasource.setDatabaseName(props.getProperty("ssisdb.database"));
         datasource.setUser(System.getenv("MSSQLUSER"));
-        datasource.setPassword(System.getenv("MSSQLPASS"));
+       datasource.setPassword(System.getenv("MSSQLPASS"));
         datasource.setIntegratedSecurity(true);
         datasource.setTrustServerCertificate(true);
         datasource.setAuthenticationScheme("NTLM");
 
         SSISDBManager ssisdbManager = SSISDBManager.getInstance();
-        Project ssisProject = new Project("myssisproject", "projects", false);
         try {
-            Execution ssisExecution = ssisdbManager.createExecution(datasource, ssisProject, "Package.dtsx");
-            ssisdbManager.startExecution(datasource, ssisExecution);
+            var ssisExecution = new SSISExecutionBuilder()
+                    .dataSource(datasource)
+                    .folderName("projects")
+                    .projectName("myssisproject")
+                    .packageName("Package.dtsx")
+                    .createExecution()
+                    .build();
+
+            ssisdbManager.startExecution(ssisExecution);
+
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

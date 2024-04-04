@@ -20,7 +20,12 @@ public class SSISDBManager {
         }
         return instance;
     }
-    public Execution createExecution(SQLServerDataSource dataSource, Project project, String packageName) throws SQLException {
+    public long createExecution(SQLServerDataSource dataSource,
+                                         String folderName,
+                                         String projectName,
+                                         String packageName,
+                                         boolean use32BitRuntime
+    ) throws SQLException {
         long executionId = -1;
         String createExecutionStmt = """
                     EXECUTE [catalog].[create_execution]
@@ -33,32 +38,28 @@ public class SSISDBManager {
         try(Connection conn = dataSource.getConnection();
             CallableStatement cstmt = conn.prepareCall(createExecutionStmt);
         ) {
-            cstmt.setString(1, project.folderName);
-            cstmt.setString(2, project.projectName);
+            cstmt.setString(1, folderName);
+            cstmt.setString(2, projectName);
             cstmt.setString(3, packageName);
-            cstmt.setBoolean(4, project.use32BitRuntime);
+            cstmt.setBoolean(4, use32BitRuntime);
             cstmt.registerOutParameter(5, Types.INTEGER);
             cstmt.execute();
             executionId = cstmt.getInt(5);
-            return new Execution(
-                    project,
-                    packageName,
-                    executionId
-            );
+            return executionId;
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
-    public boolean startExecution(SQLServerDataSource dataSource, Execution execution){
+    public boolean startExecution(SSISExecution SSISExecution){
         final String startExecutionStmt = """
                     EXECUTE [catalog].[start_execution]
                          @execution_id = ?
                         ,@retry_count = 0
                 """;
-        try(Connection conn = dataSource.getConnection();
+        try(Connection conn = SSISExecution.getDataSource().getConnection();
             CallableStatement cstmt = conn.prepareCall(startExecutionStmt);
         ) {
-            cstmt.setLong(1, execution.executionId);
+            cstmt.setLong(1, SSISExecution.getExecutionId());
             cstmt.execute();
             return true;
         } catch (SQLException e) {
