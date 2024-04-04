@@ -20,12 +20,13 @@ public class SSISExecutionManager {
         }
         return instance;
     }
+
     public long createExecution(SQLServerDataSource dataSource,
                                          String folderName,
                                          String projectName,
                                          String packageName,
                                          boolean use32BitRuntime
-    ) throws SQLException {
+    ) throws RuntimeException {
         long executionId = -1;
         String createExecutionStmt = """
                     EXECUTE [catalog].[create_execution]
@@ -50,21 +51,49 @@ public class SSISExecutionManager {
             throw new RuntimeException(e);
         }
     }
-    public boolean startExecution(SSISExecution SSISExecution){
+    public void startExecution(SSISExecution ssisExecution) throws RuntimeException{
         final String startExecutionStmt = """
                     EXECUTE [catalog].[start_execution]
                          @execution_id = ?
                         ,@retry_count = 0
                 """;
-        try(Connection conn = SSISExecution.getDataSource().getConnection();
+        try(Connection conn = ssisExecution.getDataSource().getConnection();
             CallableStatement cstmt = conn.prepareCall(startExecutionStmt);
         ) {
-            cstmt.setLong(1, SSISExecution.getExecutionId());
+            cstmt.setLong(1, ssisExecution.getExecutionId());
             cstmt.execute();
-            return true;
         } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
+            throw new RuntimeException(e);
+        }
+    }
+    public void createExecutionDump(SSISExecution ssisExecution) throws RuntimeException{
+        final String createExecutionDmpStmt = """
+                    EXECUTE [catalog].[create_execution_dump]
+                         @execution_id = ?
+                """;
+
+        try(Connection conn = ssisExecution.getDataSource().getConnection();
+            CallableStatement cstmt = conn.prepareCall(createExecutionDmpStmt);
+        ) {
+            cstmt.setLong(1, ssisExecution.getExecutionId());
+            cstmt.execute();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    public void stopExecution(SSISExecution ssisExecution) throws RuntimeException{
+        final String createExecutionDmpStmt = """
+                    EXECUTE [catalog].[stop_operation]
+                         @operation_id = ?
+                """;
+
+        try(Connection conn = ssisExecution.getDataSource().getConnection();
+            CallableStatement cstmt = conn.prepareCall(createExecutionDmpStmt);
+        ) {
+            cstmt.setLong(1, ssisExecution.getExecutionId());
+            cstmt.execute();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
     }
 }

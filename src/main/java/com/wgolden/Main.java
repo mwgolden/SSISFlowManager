@@ -45,6 +45,7 @@ public class Main {
                     .build();
 
             executionManager.startExecution(ssisExecution);
+            executionManager.stopExecution(ssisExecution);
 
         } catch (SQLException e) {
             throw new RuntimeException(e);
