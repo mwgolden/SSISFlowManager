@@ -6,17 +6,17 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Types;
 
-public class SSISDBManager {
+public class SSISExecutionManager {
 
-    private static SSISDBManager instance;
+    private static SSISExecutionManager instance;
 
-    private SSISDBManager(){
+    private SSISExecutionManager(){
 
     }
 
-    public static synchronized SSISDBManager getInstance(){
+    public static synchronized SSISExecutionManager getInstance(){
         if(instance == null){
-            instance = new SSISDBManager();
+            instance = new SSISExecutionManager();
         }
         return instance;
     }

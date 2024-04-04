@@ -1,7 +1,7 @@
 package com.wgolden;
 
 import com.microsoft.sqlserver.jdbc.*;
-import com.wgolden.ssisdb.SSISDBManager;
+import com.wgolden.ssisdb.SSISExecutionManager;
 import com.wgolden.ssisdb.SSISExecutionBuilder;
 
 import java.io.IOException;
@@ -34,17 +34,17 @@ public class Main {
         datasource.setTrustServerCertificate(true);
         datasource.setAuthenticationScheme("NTLM");
 
-        SSISDBManager ssisdbManager = SSISDBManager.getInstance();
+        SSISExecutionManager executionManager = SSISExecutionManager.getInstance();
         try {
             var ssisExecution = new SSISExecutionBuilder()
                     .dataSource(datasource)
                     .folderName("projects")
                     .projectName("myssisproject")
                     .packageName("Package.dtsx")
-                    .createExecution(ssisdbManager)
+                    .createExecution(executionManager)
                     .build();
 
-            ssisdbManager.startExecution(ssisExecution);
+            executionManager.startExecution(ssisExecution);
 
         } catch (SQLException e) {
             throw new RuntimeException(e);
