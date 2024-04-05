@@ -33,17 +33,44 @@ public class Main {
         datasource.setTrustServerCertificate(true);
         datasource.setAuthenticationScheme("NTLM");
 
-
-        SSISCatalogManager catalogManager = SSISCatalogManager.getInstance();
         SSISEnvironmentManager environmentManager = SSISEnvironmentManager.getInstance();
         try{
             String folderName = "test_folder";
-            int folderId = catalogManager.createFolder(datasource, folderName);
-            System.out.printf("Created folder (%d, %s)\n", folderId, folderName);
+            // environment already exists, so we don't need to create it
             SSISEnvironment ssisEnvironment = new SSISEnvironmentBuilder()
                     .environmentName("my_test_environment")
                     .folderName(folderName)
                     .dataSource(datasource)
+                    .build();
+
+            SSISEnvironmentVariable<String> ssisEnvironmentVariable = new SSISEnvironmentVariableBuilder<String>()
+                    .ssisEnvironment(ssisEnvironment)
+                    .variableName("my_env_variable")
+                    .variableDataType(SSISEnvironmentVariableDatatype.String)
+                    .variableValue("Oh look a string variable")
+                    .isSensitive(false)
+                    .build();
+
+            environmentManager.createEnvironmentVariable(ssisEnvironmentVariable);
+
+        } catch (RuntimeException e) {
+            throw new RuntimeException(e);
+        }
+
+
+    }
+
+    private static void create_folder_and_environment(SQLServerDataSource dataSource){
+        SSISCatalogManager catalogManager = SSISCatalogManager.getInstance();
+        SSISEnvironmentManager environmentManager = SSISEnvironmentManager.getInstance();
+        try{
+            String folderName = "test_folder";
+            int folderId = catalogManager.createFolder(dataSource, folderName);
+            System.out.printf("Created folder (%d, %s)\n", folderId, folderName);
+            SSISEnvironment ssisEnvironment = new SSISEnvironmentBuilder()
+                    .environmentName("my_test_environment")
+                    .folderName(folderName)
+                    .dataSource(dataSource)
                     .build();
             environmentManager.createEnvironment(ssisEnvironment);
         } catch (RuntimeException e) {
