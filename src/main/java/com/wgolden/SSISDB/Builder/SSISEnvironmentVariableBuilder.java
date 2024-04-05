@@ -8,7 +8,7 @@ public class SSISEnvironmentVariableBuilder<T> {
     private SSISEnvironment ssisEnvironment;
     private  String variableName;
     private SSISEnvironmentVariableDatatype variableDatatype;
-    private boolean isSensitive;
+    private boolean isSensitive = false;
     private T variableValue;
     private  String description;
 

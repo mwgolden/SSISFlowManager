@@ -58,7 +58,6 @@ public class Main {
                     .variableName("another_env_variable")
                     .variableDataType(SSISEnvironmentVariableDatatype.Double)
                     .variableValue(99.99)
-                    .isSensitive(false)
                     .build();
 
             environmentManager.createEnvironmentVariable(ssisEnvironmentVariable);
