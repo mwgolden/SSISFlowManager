@@ -35,9 +35,17 @@ public class Main {
 
 
         SSISCatalogManager catalogManager = SSISCatalogManager.getInstance();
+        SSISEnvironmentManager environmentManager = SSISEnvironmentManager.getInstance();
         try{
             String folderName = "test_folder";
-            catalogManager.deleteFolder(datasource, folderName);
+            int folderId = catalogManager.createFolder(datasource, folderName);
+            System.out.printf("Created folder (%d, %s)\n", folderId, folderName);
+            SSISEnvironment ssisEnvironment = new SSISEnvironmentBuilder()
+                    .environmentName("my_test_environment")
+                    .folderName(folderName)
+                    .dataSource(datasource)
+                    .build();
+            environmentManager.createEnvironment(ssisEnvironment);
         } catch (RuntimeException e) {
             throw new RuntimeException(e);
         }
