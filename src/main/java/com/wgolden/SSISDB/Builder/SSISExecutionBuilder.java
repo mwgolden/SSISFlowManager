@@ -1,9 +1,10 @@
-package com.wgolden.ssisdb;
+package com.wgolden.SSISDB.Builder;
 
 import com.microsoft.sqlserver.jdbc.SQLServerDataSource;
+import com.wgolden.SSISDB.Manager.SSISExecutionManager;
+import com.wgolden.SSISDB.Pojo.SSISExecution;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
 
 public class SSISExecutionBuilder {
     private String packageName;

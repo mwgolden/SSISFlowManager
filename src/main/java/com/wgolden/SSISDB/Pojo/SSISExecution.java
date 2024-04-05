@@ -1,4 +1,4 @@
-package com.wgolden.ssisdb;
+package com.wgolden.SSISDB.Pojo;
 
 import com.microsoft.sqlserver.jdbc.SQLServerDataSource;
 

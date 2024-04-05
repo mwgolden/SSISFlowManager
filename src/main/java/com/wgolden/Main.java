@@ -1,7 +1,17 @@
 package com.wgolden;
 
 import com.microsoft.sqlserver.jdbc.*;
-import com.wgolden.ssisdb.*;
+import com.wgolden.SSISDB.Builder.SSISEnvironmentBuilder;
+import com.wgolden.SSISDB.Builder.SSISEnvironmentVariableBuilder;
+import com.wgolden.SSISDB.Builder.SSISExecutionBuilder;
+import com.wgolden.SSISDB.Builder.SSISExecutionParameterBuilder;
+import com.wgolden.SSISDB.Manager.SSISCatalogManager;
+import com.wgolden.SSISDB.Manager.SSISEnvironmentManager;
+import com.wgolden.SSISDB.Manager.SSISExecutionManager;
+import com.wgolden.SSISDB.Pojo.SSISEnvironment;
+import com.wgolden.SSISDB.Pojo.SSISEnvironmentVariable;
+import com.wgolden.SSISDB.Pojo.SSISEnvironmentVariableDatatype;
+import com.wgolden.SSISDB.Pojo.SSISExecutionParameter;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -43,11 +53,11 @@ public class Main {
                     .dataSource(datasource)
                     .build();
 
-            SSISEnvironmentVariable<String> ssisEnvironmentVariable = new SSISEnvironmentVariableBuilder<String>()
+            SSISEnvironmentVariable<Double> ssisEnvironmentVariable = new SSISEnvironmentVariableBuilder<Double>()
                     .ssisEnvironment(ssisEnvironment)
-                    .variableName("my_env_variable")
-                    .variableDataType(SSISEnvironmentVariableDatatype.String)
-                    .variableValue("Oh look a string variable")
+                    .variableName("another_env_variable")
+                    .variableDataType(SSISEnvironmentVariableDatatype.Double)
+                    .variableValue(99.99)
                     .isSensitive(false)
                     .build();
 

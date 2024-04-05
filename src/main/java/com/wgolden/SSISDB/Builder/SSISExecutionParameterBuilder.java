@@ -1,6 +1,7 @@
-package com.wgolden.ssisdb;
+package com.wgolden.SSISDB.Builder;
 
 import com.microsoft.sqlserver.jdbc.SQLServerDataSource;
+import com.wgolden.SSISDB.Pojo.SSISExecutionParameter;
 
 public class SSISExecutionParameterBuilder<T> {
     private long executionId;

@@ -1,4 +1,4 @@
-package com.wgolden.ssisdb;
+package com.wgolden.SSISDB.Pojo;
 
 public class SSISEnvironmentVariable<T> {
     private final SSISEnvironment environment;

@@ -1,7 +1,6 @@
-package com.wgolden.ssisdb;
+package com.wgolden.SSISDB.Manager;
 
 import com.microsoft.sqlserver.jdbc.SQLServerDataSource;
-import com.microsoft.sqlserver.jdbc.SQLServerException;
 
 import java.sql.CallableStatement;
 import java.sql.Connection;

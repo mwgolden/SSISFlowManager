@@ -1,9 +1,13 @@
-package com.wgolden.ssisdb;
+package com.wgolden.SSISDB.Builder;
+
+import com.wgolden.SSISDB.Pojo.SSISEnvironment;
+import com.wgolden.SSISDB.Pojo.SSISEnvironmentVariable;
+import com.wgolden.SSISDB.Pojo.SSISEnvironmentVariableDatatype;
 
 public class SSISEnvironmentVariableBuilder<T> {
-    private  SSISEnvironment ssisEnvironment;
+    private SSISEnvironment ssisEnvironment;
     private  String variableName;
-    private  SSISEnvironmentVariableDatatype variableDatatype;
+    private SSISEnvironmentVariableDatatype variableDatatype;
     private boolean isSensitive;
     private T variableValue;
     private  String description;
