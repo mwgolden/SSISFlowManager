@@ -189,7 +189,6 @@ public class SSISEnvironmentManager {
                        ,@project_name = ?
                        ,@environment_name = ?
                        ,@reference_type = ?
-                       ,@environment_folder_name = ?
                        ,@reference_id = ?
                 """;
         long referenceId = -1;
@@ -200,10 +199,9 @@ public class SSISEnvironmentManager {
             stmt.setString(2, projectName);
             stmt.setString(3, ssisEnvironment.getEnvironmentName());
             stmt.setString(4, ssisEnvironmentReferenceType.toString());
-            stmt.setString(5, ssisEnvironment.getFolderName());
-            stmt.registerOutParameter(6, Types.INTEGER);
+            stmt.registerOutParameter(5, Types.INTEGER);
             stmt.execute();
-            referenceId = stmt.getInt(6);
+            referenceId = stmt.getInt(5);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

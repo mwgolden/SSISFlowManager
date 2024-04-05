@@ -1,17 +1,11 @@
 package com.wgolden;
 
 import com.microsoft.sqlserver.jdbc.*;
-import com.wgolden.SSISDB.Builder.SSISEnvironmentBuilder;
-import com.wgolden.SSISDB.Builder.SSISEnvironmentVariableBuilder;
-import com.wgolden.SSISDB.Builder.SSISExecutionBuilder;
-import com.wgolden.SSISDB.Builder.SSISExecutionParameterBuilder;
+import com.wgolden.SSISDB.Builder.*;
 import com.wgolden.SSISDB.Manager.SSISCatalogManager;
 import com.wgolden.SSISDB.Manager.SSISEnvironmentManager;
 import com.wgolden.SSISDB.Manager.SSISExecutionManager;
-import com.wgolden.SSISDB.Pojo.SSISEnvironment;
-import com.wgolden.SSISDB.Pojo.SSISEnvironmentVariable;
-import com.wgolden.SSISDB.Pojo.SSISEnvironmentVariableDatatype;
-import com.wgolden.SSISDB.Pojo.SSISExecutionParameter;
+import com.wgolden.SSISDB.Pojo.*;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -45,7 +39,7 @@ public class Main {
 
         SSISEnvironmentManager environmentManager = SSISEnvironmentManager.getInstance();
         try{
-            String folderName = "test_folder";
+            String folderName = "Projects";
             // environment already exists, so we don't need to create it
             SSISEnvironment ssisEnvironment = new SSISEnvironmentBuilder()
                     .environmentName("my_test_environment")
@@ -53,14 +47,27 @@ public class Main {
                     .dataSource(datasource)
                     .build();
 
-            SSISEnvironmentVariable<Double> ssisEnvironmentVariable = new SSISEnvironmentVariableBuilder<Double>()
+            SSISEnvironmentVariable<String> ssisEnvironmentVariable = new SSISEnvironmentVariableBuilder<String>()
                     .ssisEnvironment(ssisEnvironment)
-                    .variableName("another_env_variable")
-                    .variableDataType(SSISEnvironmentVariableDatatype.Double)
-                    .variableValue(99.99)
+                    .variableName("BATCH_SERVER")
+                    .variableDataType(SSISEnvironmentVariableDatatype.String)
+                    .variableValue("localhost")
                     .build();
-
+            environmentManager.createEnvironment(ssisEnvironment);
             environmentManager.createEnvironmentVariable(ssisEnvironmentVariable);
+            SSISEnvironmentReference environmentReference = new SSISEnvironmentReferenceBuilder()
+                        .ssisEnvironment(ssisEnvironment)
+                        .projectFolderName("Projects")
+                        .projectName("myssisproject")
+                        .ssisEnvironmentReferenceType(SSISEnvironmentReferenceType.R)
+                        .ssisEnvironmentManager(environmentManager)
+                        .build();
+            System.out.println(environmentReference);
+
+
+
+
+
 
         } catch (RuntimeException e) {
             throw new RuntimeException(e);
