@@ -3,6 +3,8 @@ package com.wgolden;
 import com.microsoft.sqlserver.jdbc.*;
 import com.wgolden.ssisdb.SSISExecutionManager;
 import com.wgolden.ssisdb.SSISExecutionBuilder;
+import com.wgolden.ssisdb.SSISExecutionParameter;
+import com.wgolden.ssisdb.SSISExecutionParameterBuilder;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -44,6 +46,24 @@ public class Main {
                     .ssisExecutionManager(executionManager)
                     .build();
 
+            SSISExecutionParameter<Boolean> param = new SSISExecutionParameterBuilder<Boolean>()
+                    .executionId(ssisExecution.getExecutionId())
+                    .objectType(50)
+                    .parameterName("SYNCHRONIZED")
+                    .parameterValue(true)
+                    .dataSource(datasource)
+                    .build();
+
+            SSISExecutionParameter<Integer> logging = new SSISExecutionParameterBuilder<Integer>()
+                    .executionId(ssisExecution.getExecutionId())
+                    .objectType(50)
+                    .parameterName("LOGGING_LEVEL")
+                    .parameterValue(3)
+                    .dataSource(datasource)
+                    .build();
+
+            executionManager.setExecutionParameter(param);
+            executionManager.setExecutionParameter(logging);
             executionManager.startExecution(ssisExecution);
 
         } catch (SQLException e) {

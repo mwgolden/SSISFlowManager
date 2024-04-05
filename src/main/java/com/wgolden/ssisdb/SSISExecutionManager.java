@@ -96,4 +96,25 @@ public class SSISExecutionManager {
             throw new RuntimeException(e);
         }
     }
+    public void setExecutionParameter(SSISExecutionParameter ssisExecutionParameter){
+        final String setExecutionParameterStmt = """
+                    EXECUTE [catalog].[set_execution_parameter_value]
+                         @execution_id = ?
+                        ,@object_type = ?
+                        ,@parameter_name = ?
+                        ,@parameter_value = ?
+                """;
+        try(Connection conn = ssisExecutionParameter.getDataSource().getConnection();
+            CallableStatement cstmt = conn.prepareCall(setExecutionParameterStmt);
+        ) {
+            cstmt.setLong(1, ssisExecutionParameter.getExecutionId());
+            cstmt.setInt(2, ssisExecutionParameter.getObjectType());
+            cstmt.setString(3, ssisExecutionParameter.getParameterName());
+            cstmt.setObject(4, ssisExecutionParameter.getParameterValue());
+            cstmt.execute();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
 }

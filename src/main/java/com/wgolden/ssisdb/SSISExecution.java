@@ -3,12 +3,11 @@ package com.wgolden.ssisdb;
 import com.microsoft.sqlserver.jdbc.SQLServerDataSource;
 
 public class SSISExecution {
-    private String folderName;
-    private String projectName;
-    private String packageName;
-    private long executionId;
-
-    private SQLServerDataSource dataSource;
+    private final String folderName;
+    private final String projectName;
+    private final String packageName;
+    private final long executionId;
+    private final SQLServerDataSource dataSource;
 
     public SSISExecution(String projectName,
                          String folderName,

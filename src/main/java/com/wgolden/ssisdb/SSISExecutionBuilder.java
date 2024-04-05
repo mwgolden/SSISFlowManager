@@ -9,7 +9,6 @@ public class SSISExecutionBuilder {
     private String packageName;
     private String projectName;
     private String folderName;
-    private ArrayList<ExecutionParameter> executionParameters = null;
     private SQLServerDataSource dataSource = null;
     private boolean use32BitRuntime = false;
     private long executionId;
@@ -28,14 +27,6 @@ public class SSISExecutionBuilder {
         this.folderName = folderName;
         return this;
     }
-    public SSISExecutionBuilder addExecutionParameter(ExecutionParameter parameter){
-        if(this.executionParameters == null){
-            this.executionParameters = new ArrayList<ExecutionParameter>();
-        }
-        this.executionParameters.add(parameter);
-        return  this;
-    }
-
     public SSISExecutionBuilder dataSource(SQLServerDataSource dataSource){
         this.dataSource = dataSource;
         return this;
