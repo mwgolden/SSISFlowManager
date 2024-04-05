@@ -127,4 +127,53 @@ public class SSISEnvironmentManager {
             throw new RuntimeException(e);
         }
     }
+    public void deleteEnvironmentVariable(SSISEnvironment ssisEnvironment, String variableName) throws RuntimeException{
+        String deleteEnvVarStmt = """
+                    catalog.delete_environment_variable
+                         @folder_name  = ?
+                        ,@environment_name = ?
+                        ,@variable_name = ?
+                """;
+        try(Connection conn = ssisEnvironment.getDataSource().getConnection();
+            CallableStatement stmt = conn.prepareCall(deleteEnvVarStmt);
+        ) {
+            stmt.setString(1, ssisEnvironment.getFolderName());
+            stmt.setString(2, ssisEnvironment.getEnvironmentName());
+            stmt.setString(3, variableName);
+            stmt.execute();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    public <T> SSISEnvironmentVariable<T> setEnvironmentVariable(SSISEnvironmentVariable<T> ssisEnvironmentVariable, T newValue) throws RuntimeException{
+        String setEnvVarStmt = """
+                    catalog.set_environment_variable_value
+                        @folder_name = ?
+                        ,@environment_name = ?
+                        ,@variable_name = ?
+                        ,@value = ?
+                """;
+        var ssisEnvironment = ssisEnvironmentVariable.getEnvironment();
+        try(Connection conn = ssisEnvironment.getDataSource().getConnection();
+            CallableStatement stmt = conn.prepareCall(setEnvVarStmt);
+        ) {
+            stmt.setString(1, ssisEnvironment.getFolderName());
+            stmt.setString(2, ssisEnvironment.getEnvironmentName());
+            stmt.setString(3, ssisEnvironmentVariable.getVariableName());
+            stmt.setObject(4, newValue);
+            stmt.execute();
+
+            return new SSISEnvironmentVariable<>(
+                    ssisEnvironment,
+                    ssisEnvironmentVariable.getVariableName(),
+                    ssisEnvironmentVariable.getDataType(),
+                    ssisEnvironmentVariable.isSensitive(),
+                    newValue,
+                    ssisEnvironmentVariable.getDescription()
+            );
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
 }
