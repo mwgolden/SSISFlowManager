@@ -1,11 +1,13 @@
 package com.wgolden.SSISDB.Manager;
 
 import com.wgolden.SSISDB.Pojo.SSISEnvironment;
+import com.wgolden.SSISDB.Pojo.SSISEnvironmentReferenceType;
 import com.wgolden.SSISDB.Pojo.SSISEnvironmentVariable;
 
 import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.Types;
 
 public class SSISEnvironmentManager {
     private static SSISEnvironmentManager instance;
@@ -175,5 +177,36 @@ public class SSISEnvironmentManager {
             throw new RuntimeException(e);
         }
 
+    }
+    public long createEnvironmentReference(SSISEnvironment ssisEnvironment,
+                                           String projectFolderName,
+                                           String projectName,
+                                           SSISEnvironmentReferenceType ssisEnvironmentReferenceType)
+    throws RuntimeException {
+        final String createEnvRefStmt = """
+                    catalog.create_environment_reference
+                        @folder_name = ?
+                       ,@project_name = ?
+                       ,@environment_name = ?
+                       ,@reference_type = ?
+                       ,@environment_folder_name = ?
+                       ,@reference_id = ?
+                """;
+        long referenceId = -1;
+        try(Connection conn = ssisEnvironment.getDataSource().getConnection();
+            CallableStatement stmt = conn.prepareCall(createEnvRefStmt);){
+
+            stmt.setString(1, projectFolderName);
+            stmt.setString(2, projectName);
+            stmt.setString(3, ssisEnvironment.getEnvironmentName());
+            stmt.setString(4, ssisEnvironmentReferenceType.toString());
+            stmt.setString(5, ssisEnvironment.getFolderName());
+            stmt.registerOutParameter(6, Types.INTEGER);
+            stmt.execute();
+            referenceId = stmt.getInt(6);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return referenceId;
     }
 }
