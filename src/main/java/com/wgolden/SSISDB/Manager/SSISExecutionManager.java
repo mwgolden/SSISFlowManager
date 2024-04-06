@@ -8,6 +8,7 @@ import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.HashMap;
 
 public class SSISExecutionManager {
 
@@ -24,12 +25,7 @@ public class SSISExecutionManager {
         return instance;
     }
 
-    public long createExecution(SQLServerDataSource dataSource,
-                                         String folderName,
-                                         String projectName,
-                                         String packageName,
-                                         boolean use32BitRuntime
-    ) throws RuntimeException {
+    public long createExecution(HashMap<String, Object> params) throws RuntimeException {
         long executionId = -1;
         String createExecutionStmt = """
                     EXECUTE [catalog].[create_execution]
@@ -39,13 +35,17 @@ public class SSISExecutionManager {
                       ,@use32bitruntime=?
                       ,@execution_id= ?
                 """;
+        if(params.get("environmentReferenceId") != null){
+            createExecutionStmt += "\n @reference_id = ?";
+        }
+        var dataSource = (SQLServerDataSource)params.get("dataSource");
         try(Connection conn = dataSource.getConnection();
             CallableStatement cstmt = conn.prepareCall(createExecutionStmt);
         ) {
-            cstmt.setString(1, folderName);
-            cstmt.setString(2, projectName);
-            cstmt.setString(3, packageName);
-            cstmt.setBoolean(4, use32BitRuntime);
+            cstmt.setString(1, (String)params.get("folderName"));
+            cstmt.setString(2, (String)params.get("projectName"));
+            cstmt.setString(3, (String)params.get("packageName"));
+            cstmt.setBoolean(4, (boolean)params.get("use32BitRuntime"));
             cstmt.registerOutParameter(5, Types.INTEGER);
             cstmt.execute();
             executionId = cstmt.getInt(5);

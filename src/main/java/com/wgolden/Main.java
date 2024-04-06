@@ -47,28 +47,34 @@ public class Main {
                     .dataSource(datasource)
                     .build();
 
-            SSISEnvironmentVariable<String> ssisEnvironmentVariable = new SSISEnvironmentVariableBuilder<String>()
-                    .ssisEnvironment(ssisEnvironment)
-                    .variableName("BATCH_SERVER")
-                    .variableDataType(SSISEnvironmentVariableDatatype.String)
-                    .variableValue("localhost")
-                    .build();
-            environmentManager.createEnvironment(ssisEnvironment);
-            environmentManager.createEnvironmentVariable(ssisEnvironmentVariable);
-            SSISEnvironmentReference environmentReference = new SSISEnvironmentReferenceBuilder()
-                        .ssisEnvironment(ssisEnvironment)
-                        .projectFolderName("Projects")
-                        .projectName("myssisproject")
-                        .ssisEnvironmentReferenceType(SSISEnvironmentReferenceType.R)
-                        .ssisEnvironmentManager(environmentManager)
-                        .build();
-            System.out.println(environmentReference);
+            SSISExecutionManager ssisExecutionManager = SSISExecutionManager.getInstance();
+            SSISExecution ssisExecution = new SSISExecutionBuilder()
+                    .ssisExecutionManager(ssisExecutionManager)
+                    .dataSource()
 
+            //SSISEnvironmentVariable<String> ssisEnvironmentVariable = new SSISEnvironmentVariableBuilder<String>()
+            //        .ssisEnvironment(ssisEnvironment)
+            //        .variableName("ConnectionString")
+            //        .variableDataType(SSISEnvironmentVariableDatatype.String)
+            //        .variableValue("Data Source=localhost;Initial Catalog=AdventureWorks;Provider=SQLOLEDB.1;Integrated Security=SSPI;")
+            //        .build();
 
-
-
-
-
+            //environmentManager.createEnvironment(ssisEnvironment);
+            //environmentManager.createEnvironmentVariable(ssisEnvironmentVariable);
+           // SSISEnvironmentReference environmentReference = new SSISEnvironmentReferenceBuilder()
+            //            .ssisEnvironment(ssisEnvironment)
+             //           .projectFolderName("Projects")
+           //             .projectName("myssisproject")
+           //             .ssisEnvironmentReferenceType(SSISEnvironmentReferenceType.R)
+           //             .ssisEnvironmentManager(environmentManager)
+           //             .build();
+          //  environmentManager.setObjectParameterValue(
+          //          environmentReference,
+          //          20,
+          //          "ConnectionString",
+          //          "Data Source=localhost;Initial Catalog=AdventureWorks;Provider=SQLOLEDB.1;Integrated Security=SSPI;"
+          //  );
+          //  System.out.println(environmentReference);
         } catch (RuntimeException e) {
             throw new RuntimeException(e);
         }

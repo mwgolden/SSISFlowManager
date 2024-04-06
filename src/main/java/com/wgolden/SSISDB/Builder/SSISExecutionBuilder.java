@@ -5,6 +5,7 @@ import com.wgolden.SSISDB.Manager.SSISExecutionManager;
 import com.wgolden.SSISDB.Pojo.SSISExecution;
 
 import java.sql.SQLException;
+import java.util.HashMap;
 
 public class SSISExecutionBuilder {
     private String packageName;
@@ -13,6 +14,7 @@ public class SSISExecutionBuilder {
     private SQLServerDataSource dataSource = null;
     private boolean use32BitRuntime = false;
     private long executionId;
+    private int environmentReferenceId;
 
     private SSISExecutionManager ssisExecutionManager = null;
 
@@ -41,15 +43,21 @@ public class SSISExecutionBuilder {
         this.ssisExecutionManager = ssisExecutionManager;
         return this;
     }
+    public SSISExecutionBuilder environmentReferenceId(int environmentReferenceId) throws SQLException {
+        this.environmentReferenceId = environmentReferenceId;
+        return this;
+    }
     public SSISExecution build() throws RuntimeException {
         checkError();
-        this.executionId = this.ssisExecutionManager.createExecution(
-                this.dataSource,
-                this.folderName,
-                this.projectName,
-                this.packageName,
-                this.use32BitRuntime
-        );
+        var params = new HashMap<String, Object>();
+        params.put("dataSource", this.dataSource);
+        params.put("folderName", this.folderName);
+        params.put("projectName", this.projectName);
+        params.put("packageName", this.packageName);
+        params.put("use32BitRuntime", this.use32BitRuntime);
+        params.put("environmentReferenceId", this.environmentReferenceId);
+
+        this.executionId = this.ssisExecutionManager.createExecution(params);
         return new SSISExecution(this.projectName, this.folderName,this.packageName, this.executionId, this.dataSource);
     }
     private void checkError(){

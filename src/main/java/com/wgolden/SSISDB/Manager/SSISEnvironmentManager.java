@@ -1,6 +1,8 @@
 package com.wgolden.SSISDB.Manager;
 
+import com.microsoft.sqlserver.jdbc.SQLServerException;
 import com.wgolden.SSISDB.Pojo.SSISEnvironment;
+import com.wgolden.SSISDB.Pojo.SSISEnvironmentReference;
 import com.wgolden.SSISDB.Pojo.SSISEnvironmentReferenceType;
 import com.wgolden.SSISDB.Pojo.SSISEnvironmentVariable;
 
@@ -206,5 +208,31 @@ public class SSISEnvironmentManager {
             throw new RuntimeException(e);
         }
         return referenceId;
+    }
+    public <T> void setObjectParameterValue(SSISEnvironmentReference ssisEnvironmentReference,
+                                            int objectType,
+                                            String parameterName,
+                                            T parameterValue){
+        final String setObjParamStmt = """
+                    catalog.set_object_parameter_value
+                         @object_type     =  ?
+                        ,@folder_name     =  ?
+                        ,@project_name    =  ?
+                        ,@parameter_name  =  ?
+                        ,@parameter_value =  ?
+                """;
+        SSISEnvironment ssisEnvironment = ssisEnvironmentReference.getSsisEnvironment();
+        try(Connection conn = ssisEnvironment.getDataSource().getConnection();
+            CallableStatement stmt = conn.prepareCall(setObjParamStmt);
+        ){
+            stmt.setInt(1, objectType);
+            stmt.setString(2, ssisEnvironment.getFolderName());
+            stmt.setString(3, ssisEnvironmentReference.getProjectName());
+            stmt.setString(4, parameterName);
+            stmt.setObject(5, parameterValue);
+            stmt.execute();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
