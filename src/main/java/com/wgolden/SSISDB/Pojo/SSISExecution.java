@@ -7,18 +7,21 @@ public class SSISExecution {
     private final String projectName;
     private final String packageName;
     private final long executionId;
+    private final int retryCount;
     private final SQLServerDataSource dataSource;
 
     public SSISExecution(String projectName,
                          String folderName,
                          String packageName,
                          long executionId,
+                         int retryCount,
                          SQLServerDataSource dataSource){
         this.projectName = projectName;
         this.folderName = folderName;
         this.packageName = packageName;
         this.executionId = executionId;
         this.dataSource = dataSource;
+        this.retryCount = retryCount;
     }
 
     public String getFolderName() {
@@ -39,5 +42,9 @@ public class SSISExecution {
 
     public SQLServerDataSource getDataSource() {
         return dataSource;
+    }
+
+    public int getRetryCount() {
+        return retryCount;
     }
 }

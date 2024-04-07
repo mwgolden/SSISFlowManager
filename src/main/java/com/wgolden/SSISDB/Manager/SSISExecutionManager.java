@@ -17,7 +17,21 @@ public class SSISExecutionManager {
     private SSISExecutionManager(){
 
     }
-
+    /**
+     * Returns the singleton instance of the SSISExecutionManager.
+     * <p>
+     * This method ensures that only one instance of SSISExecutionManager is created
+     * and returned throughout the application's lifecycle. It follows the
+     * Singleton design pattern to provide a global point of access to the
+     * SSISExecutionManager instance.
+     * <p>
+     * The instance is lazily initialized, meaning it is created only when
+     * {@code getInstance()} is called for the first time.
+     * <p>
+     * Note: This method is thread-safe.
+     *
+     * @return The singleton instance of the SSISExecutionManager.
+     */
     public static synchronized SSISExecutionManager getInstance(){
         if(instance == null){
             instance = new SSISExecutionManager();
@@ -25,6 +39,14 @@ public class SSISExecutionManager {
         return instance;
     }
 
+    /**
+     * Creates an instance of execution in the Integration Services catalog.
+     *
+     * @param params    The parameters for the catalog.create_execution stored procedure
+     * @param dataSource    The SQL Server data source
+     * @return  The Id of the created execution
+     * @throws SQLException is a sql error occurs
+     */
     public long createExecution(HashMap<String, Object> params, SQLServerDataSource dataSource) throws RuntimeException {
         long executionId = -1;
         StringBuilder sb = new StringBuilder();
@@ -52,21 +74,36 @@ public class SSISExecutionManager {
             throw new RuntimeException(e);
         }
     }
+
+    /**
+     * Starts an instance of execution in the Integration Services catalog.
+     *
+     * @param ssisExecution An instance in the SSISExecution class
+     * @throws SQLException if a sql error occurs
+     */
     public void startExecution(SSISExecution ssisExecution) throws RuntimeException{
         final String startExecutionStmt = """
                     EXECUTE [catalog].[start_execution]
                          @execution_id = ?
-                        ,@retry_count = 0
+                        ,@retry_count = ?
                 """;
         try(Connection conn = ssisExecution.getDataSource().getConnection();
             CallableStatement cstmt = conn.prepareCall(startExecutionStmt);
         ) {
             cstmt.setLong(1, ssisExecution.getExecutionId());
+            cstmt.setInt(2, ssisExecution.getRetryCount());
             cstmt.execute();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
+
+    /**
+     * Causes a running package to pause and create a dump file. The file is stored in the <drive>:\Program Files\Microsoft SQL Server\130\Shared\ErrorDumps folder.
+     *
+     * @param ssisExecution An instance in the SSISExecution class
+     * @throws SQLException if a SQL error occurs
+     */
     public void createExecutionDump(SSISExecution ssisExecution) throws RuntimeException{
         final String createExecutionDmpStmt = """
                     EXECUTE [catalog].[create_execution_dump]
@@ -82,6 +119,13 @@ public class SSISExecutionManager {
             throw new RuntimeException(e);
         }
     }
+
+    /**
+     * Stops an instance of execution in the Integration Services catalog.
+     *
+     * @param ssisExecution An instance in the SSISExecution class
+     * @throws SQLException if a SQL error occurs
+     */
     public void stopExecution(SSISExecution ssisExecution) throws RuntimeException{
         final String createExecutionDmpStmt = """
                     EXECUTE [catalog].[stop_operation]
@@ -97,6 +141,13 @@ public class SSISExecutionManager {
             throw new RuntimeException(e);
         }
     }
+
+    /**
+     * Sets the value of a parameter for an instance of execution in the Integration Services catalog.
+     *
+     * @param ssisExecutionParameter    An instance of the SSISExecutionParameter Class
+     * @throws SQLException if a SQL error occurs
+     */
     public void setExecutionParameter(SSISExecutionParameter ssisExecutionParameter){
         final String setExecutionParameterStmt = """
                     EXECUTE [catalog].[set_execution_parameter_value]
@@ -116,6 +167,5 @@ public class SSISExecutionManager {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-
     }
 }

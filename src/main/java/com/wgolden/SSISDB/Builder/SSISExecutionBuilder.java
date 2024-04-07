@@ -12,6 +12,7 @@ public class SSISExecutionBuilder {
     private final HashMap<String, Object> parameters;
     private SSISExecutionManager ssisExecutionManager = null;
     private SQLServerDataSource dataSource;
+    private int retryCount = 0;
     public SSISExecutionBuilder(){
         this.parameters = new HashMap<>();
     }
@@ -53,6 +54,10 @@ public class SSISExecutionBuilder {
         this.parameters.put("useanyworker", useAnyWorker);
         return this;
     }
+    public SSISExecutionBuilder retryCount(int retryCount){
+        this.retryCount = retryCount;
+        return this;
+    }
     public SSISExecution build() throws RuntimeException {
         checkError();
         long executionId = this.ssisExecutionManager.createExecution(this.parameters, this.dataSource);
@@ -61,6 +66,7 @@ public class SSISExecutionBuilder {
                 (String) this.parameters.get("folder_name"),
                 (String) this.parameters.get("package_name"),
                 executionId,
+                retryCount,
                 this.dataSource);
     }
     private void checkError(){
