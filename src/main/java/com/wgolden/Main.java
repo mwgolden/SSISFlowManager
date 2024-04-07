@@ -50,7 +50,15 @@ public class Main {
             SSISExecutionManager ssisExecutionManager = SSISExecutionManager.getInstance();
             SSISExecution ssisExecution = new SSISExecutionBuilder()
                     .ssisExecutionManager(ssisExecutionManager)
-                    .dataSource()
+                    .dataSource(datasource)
+                    .folderName(folderName)
+                    .projectName("myssisproject")
+                    .packageName("Package.dtsx")
+                    .environmentReferenceId(11)
+                    .build();
+
+            ssisExecutionManager.startExecution(ssisExecution);
+
 
             //SSISEnvironmentVariable<String> ssisEnvironmentVariable = new SSISEnvironmentVariableBuilder<String>()
             //        .ssisEnvironment(ssisEnvironment)
@@ -75,7 +83,7 @@ public class Main {
           //          "Data Source=localhost;Initial Catalog=AdventureWorks;Provider=SQLOLEDB.1;Integrated Security=SSPI;"
           //  );
           //  System.out.println(environmentReference);
-        } catch (RuntimeException e) {
+        } catch (RuntimeException | SQLException e) {
             throw new RuntimeException(e);
         }
 

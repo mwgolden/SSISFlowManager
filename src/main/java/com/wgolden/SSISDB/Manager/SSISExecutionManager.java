@@ -25,30 +25,28 @@ public class SSISExecutionManager {
         return instance;
     }
 
-    public long createExecution(HashMap<String, Object> params) throws RuntimeException {
+    public long createExecution(HashMap<String, Object> params, SQLServerDataSource dataSource) throws RuntimeException {
         long executionId = -1;
-        String createExecutionStmt = """
-                    EXECUTE [catalog].[create_execution]
-                       @folder_name = ?
-                      ,@project_name = ?
-                      ,@package_name = ?
-                      ,@use32bitruntime=?
-                      ,@execution_id= ?
-                """;
-        if(params.get("environmentReferenceId") != null){
-            createExecutionStmt += "\n @reference_id = ?";
+        StringBuilder sb = new StringBuilder();
+        sb.append("EXECUTE [catalog].[create_execution]");
+        for(String key : params.keySet()){
+            sb.append(String.format("\n @%s = ?,", key));
         }
-        var dataSource = (SQLServerDataSource)params.get("dataSource");
+        sb.append("\n @execution_id = ?");
+        String createExecutionStmt = sb.toString();
         try(Connection conn = dataSource.getConnection();
             CallableStatement cstmt = conn.prepareCall(createExecutionStmt);
         ) {
-            cstmt.setString(1, (String)params.get("folderName"));
-            cstmt.setString(2, (String)params.get("projectName"));
-            cstmt.setString(3, (String)params.get("packageName"));
-            cstmt.setBoolean(4, (boolean)params.get("use32BitRuntime"));
-            cstmt.registerOutParameter(5, Types.INTEGER);
+            int parameterIndex = 0;
+            for(String key : params.keySet()){
+                parameterIndex += 1;
+                var param = params.get(key).getClass().getSimpleName();
+                cstmt.setObject(parameterIndex, params.get(key));
+            }
+            parameterIndex += 1;
+            cstmt.registerOutParameter(parameterIndex, Types.INTEGER);
             cstmt.execute();
-            executionId = cstmt.getInt(5);
+            executionId = cstmt.getInt(parameterIndex);
             return executionId;
         } catch (SQLException e) {
             throw new RuntimeException(e);
