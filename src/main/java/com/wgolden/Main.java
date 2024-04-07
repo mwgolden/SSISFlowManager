@@ -37,6 +37,22 @@ public class Main {
         datasource.setTrustServerCertificate(true);
         datasource.setAuthenticationScheme("NTLM");
 
+
+
+
+
+
+    }
+    private static void test_run(SQLServerDataSource datasource){
+        /*
+            Steps to
+            1. Create ssis environment
+            2. Create a new environment variable
+            3. Create a reference to the new environment from a project
+            4. Set a package parameter to an environment variable
+            5. create an execution that references the environment
+            6. start the ssis execution
+         */
         SSISEnvironmentManager environmentManager = SSISEnvironmentManager.getInstance();
         try{
             String folderName = "Projects";
@@ -47,47 +63,48 @@ public class Main {
                     .dataSource(datasource)
                     .build();
 
+            environmentManager.createEnvironment(ssisEnvironment);
+            var environmentVariable = new SSISEnvironmentVariableBuilder<String>()
+                    .ssisEnvironment(ssisEnvironment)
+                    .variableDataType(SSISEnvironmentVariableDatatype.String)
+                    .variableName("ConnectionString")
+                    .isSensitive(false)
+                    .variableValue("Data Source=localhost;Initial Catalog=AdventureWorks;Provider=SQLOLEDB.1;Integrated Security=SSPI;")
+                    .build();
+            environmentManager.createEnvironmentVariable(environmentVariable);
+
+            SSISEnvironmentReference environmentReference = new SSISEnvironmentReferenceBuilder()
+                    .ssisEnvironment(ssisEnvironment)
+                    .projectFolderName("Projects")
+                    .projectName("myssisproject")
+                    .ssisEnvironmentReferenceType(SSISEnvironmentReferenceType.R)
+                    .ssisEnvironmentManager(environmentManager)
+                    .build();
+
+            // to connect an environment variable, the parameter value is the variable name, and value type is R
+            environmentManager.setObjectParameterValue(folderName,
+                    "myssisproject",
+                    20,
+                    "ConnectionString",
+                    environmentVariable.getVariableName(),
+                    datasource);
+
             SSISExecutionManager ssisExecutionManager = SSISExecutionManager.getInstance();
+
+
             SSISExecution ssisExecution = new SSISExecutionBuilder()
                     .ssisExecutionManager(ssisExecutionManager)
                     .dataSource(datasource)
                     .folderName(folderName)
                     .projectName("myssisproject")
                     .packageName("Package.dtsx")
-                    .environmentReferenceId(11)
+                    .environmentReferenceId(environmentReference.getEnvironmentReferenceId())
                     .build();
 
             ssisExecutionManager.startExecution(ssisExecution);
-
-
-            //SSISEnvironmentVariable<String> ssisEnvironmentVariable = new SSISEnvironmentVariableBuilder<String>()
-            //        .ssisEnvironment(ssisEnvironment)
-            //        .variableName("ConnectionString")
-            //        .variableDataType(SSISEnvironmentVariableDatatype.String)
-            //        .variableValue("Data Source=localhost;Initial Catalog=AdventureWorks;Provider=SQLOLEDB.1;Integrated Security=SSPI;")
-            //        .build();
-
-            //environmentManager.createEnvironment(ssisEnvironment);
-            //environmentManager.createEnvironmentVariable(ssisEnvironmentVariable);
-           // SSISEnvironmentReference environmentReference = new SSISEnvironmentReferenceBuilder()
-            //            .ssisEnvironment(ssisEnvironment)
-             //           .projectFolderName("Projects")
-           //             .projectName("myssisproject")
-           //             .ssisEnvironmentReferenceType(SSISEnvironmentReferenceType.R)
-           //             .ssisEnvironmentManager(environmentManager)
-           //             .build();
-          //  environmentManager.setObjectParameterValue(
-          //          environmentReference,
-          //          20,
-          //          "ConnectionString",
-          //          "Data Source=localhost;Initial Catalog=AdventureWorks;Provider=SQLOLEDB.1;Integrated Security=SSPI;"
-          //  );
-          //  System.out.println(environmentReference);
         } catch (RuntimeException | SQLException e) {
             throw new RuntimeException(e);
         }
-
-
     }
 
     private static void create_folder_and_environment(SQLServerDataSource dataSource){

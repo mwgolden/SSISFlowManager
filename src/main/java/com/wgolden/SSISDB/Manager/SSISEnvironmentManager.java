@@ -1,5 +1,6 @@
 package com.wgolden.SSISDB.Manager;
 
+import com.microsoft.sqlserver.jdbc.SQLServerDataSource;
 import com.microsoft.sqlserver.jdbc.SQLServerException;
 import com.wgolden.SSISDB.Pojo.SSISEnvironment;
 import com.wgolden.SSISDB.Pojo.SSISEnvironmentReference;
@@ -209,10 +210,12 @@ public class SSISEnvironmentManager {
         }
         return referenceId;
     }
-    public <T> void setObjectParameterValue(SSISEnvironmentReference ssisEnvironmentReference,
+    public <T> void setObjectParameterValue(String folderName,
+                                            String projectName,
                                             int objectType,
                                             String parameterName,
-                                            T parameterValue){
+                                            T parameterValue,
+                                            SQLServerDataSource dataSource){
         final String setObjParamStmt = """
                     catalog.set_object_parameter_value
                          @object_type     =  ?
@@ -220,14 +223,14 @@ public class SSISEnvironmentManager {
                         ,@project_name    =  ?
                         ,@parameter_name  =  ?
                         ,@parameter_value =  ?
+                        ,@value_type = 'R'
                 """;
-        SSISEnvironment ssisEnvironment = ssisEnvironmentReference.getSsisEnvironment();
-        try(Connection conn = ssisEnvironment.getDataSource().getConnection();
+        try(Connection conn = dataSource.getConnection();
             CallableStatement stmt = conn.prepareCall(setObjParamStmt);
         ){
             stmt.setInt(1, objectType);
-            stmt.setString(2, ssisEnvironment.getFolderName());
-            stmt.setString(3, ssisEnvironmentReference.getProjectName());
+            stmt.setString(2, folderName);
+            stmt.setString(3, projectName);
             stmt.setString(4, parameterName);
             stmt.setObject(5, parameterValue);
             stmt.execute();

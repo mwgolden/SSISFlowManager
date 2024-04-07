@@ -41,7 +41,7 @@ public class SSISExecutionBuilder {
         this.ssisExecutionManager = ssisExecutionManager;
         return this;
     }
-    public SSISExecutionBuilder environmentReferenceId(int environmentReferenceId) throws SQLException {
+    public SSISExecutionBuilder environmentReferenceId(long environmentReferenceId) throws SQLException {
         this.parameters.put("reference_id", environmentReferenceId);
         return this;
     }
