@@ -1,6 +1,7 @@
 package com.wgolden.SSISDB.Builder;
 
 import com.microsoft.sqlserver.jdbc.SQLServerDataSource;
+import com.wgolden.SSISDB.Pojo.SSISExecution;
 import com.wgolden.SSISDB.Pojo.SSISExecutionParameter;
 
 public class SSISExecutionParameterBuilder<T> {
@@ -8,10 +9,11 @@ public class SSISExecutionParameterBuilder<T> {
     private int objectType;
     private String parameterName;
     private T parameterValue;
-    private SQLServerDataSource dataSource = null;
+    private SQLServerDataSource dataSource;
 
-    public SSISExecutionParameterBuilder<T> executionId(long executionId) {
-        this.executionId = executionId;
+    public SSISExecutionParameterBuilder<T> ssisExecution(SSISExecution ssisExecution) {
+        this.executionId = ssisExecution.getExecutionId();
+        this.dataSource = ssisExecution.getDataSource();
         return this;
     }
     public SSISExecutionParameterBuilder<T> objectType(int objectType) {
@@ -24,10 +26,6 @@ public class SSISExecutionParameterBuilder<T> {
     }
     public SSISExecutionParameterBuilder<T> parameterValue(T parameterValue) {
         this.parameterValue = parameterValue;
-        return this;
-    }
-    public SSISExecutionParameterBuilder<T> dataSource(SQLServerDataSource dataSource) {
-        this.dataSource = dataSource;
         return this;
     }
     public SSISExecutionParameter<T> build(){

@@ -37,11 +37,41 @@ public class Main {
         datasource.setTrustServerCertificate(true);
         datasource.setAuthenticationScheme("NTLM");
 
+        SSISExecutionManager executionManager = SSISExecutionManager.getInstance();
+        // run a package and populate parameter at runtime without using environment
+        SSISExecution ssisExecution = null;
+        try {
+            ssisExecution = new SSISExecutionBuilder()
+                    .folderName("Projects")
+                    .projectName("myssisproject")
+                    .packageName("Package.dtsx")
+                    .dataSource(datasource)
+                    .ssisExecutionManager(executionManager)
+                    .build();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        SSISExecutionParameter<String> connectionString = new SSISExecutionParameterBuilder<String>()
+                .ssisExecution(ssisExecution)
+                .parameterValue("Data Source=localhost;Initial Catalog=AdventureWorks;Provider=SQLOLEDB.1;Integrated Security=SSPI;")
+                .objectType(20)
+                .parameterName("ConnectionString")
+                .build();
+
+        SSISExecutionParameter<Boolean> sync = new SSISExecutionParameterBuilder<Boolean>()
+                .ssisExecution(ssisExecution)
+                .objectType(50)
+                .parameterName("SYNCHRONIZED")
+                .parameterValue(true)
+                .build();
+
+        executionManager.setExecutionParameter(connectionString);
+        executionManager.setExecutionParameter(sync);
+        executionManager.startExecution(ssisExecution);
 
 
-
-
-
+        //test_run(datasource);
     }
     private static void test_run(SQLServerDataSource datasource){
         /*
@@ -135,19 +165,17 @@ public class Main {
                 .build();
 
         SSISExecutionParameter<Boolean> param = new SSISExecutionParameterBuilder<Boolean>()
-                .executionId(ssisExecution.getExecutionId())
                 .objectType(50)
                 .parameterName("SYNCHRONIZED")
                 .parameterValue(true)
-                .dataSource(dataSource)
+                .ssisExecution(ssisExecution)
                 .build();
 
         SSISExecutionParameter<Integer> logging = new SSISExecutionParameterBuilder<Integer>()
-                .executionId(ssisExecution.getExecutionId())
                 .objectType(50)
                 .parameterName("LOGGING_LEVEL")
                 .parameterValue(3)
-                .dataSource(dataSource)
+                .ssisExecution(ssisExecution)
                 .build();
 
         executionManager.setExecutionParameter(param);
