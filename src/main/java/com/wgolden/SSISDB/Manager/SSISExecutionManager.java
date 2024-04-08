@@ -127,13 +127,13 @@ public class SSISExecutionManager {
      * @throws SQLException if a SQL error occurs
      */
     public void stopExecution(SSISExecution ssisExecution) throws RuntimeException{
-        final String createExecutionDmpStmt = """
+        final String stopExecutionDmpStmt = """
                     EXECUTE [catalog].[stop_operation]
                          @operation_id = ?
                 """;
 
         try(Connection conn = ssisExecution.getDataSource().getConnection();
-            CallableStatement cstmt = conn.prepareCall(createExecutionDmpStmt);
+            CallableStatement cstmt = conn.prepareCall(stopExecutionDmpStmt);
         ) {
             cstmt.setLong(1, ssisExecution.getExecutionId());
             cstmt.execute();
