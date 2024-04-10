@@ -34,8 +34,8 @@ public class SSISExecutionBuilder {
         return this;
     }
 
-    public SSISExecutionBuilder use32BitRuntime(boolean use32BitRuntime){
-        this.parameters.put("use32BitRuntime", use32BitRuntime);
+    public SSISExecutionBuilder use32BitRuntime(){
+        this.parameters.put("use32BitRuntime", true);
         return this;
     }
     public SSISExecutionBuilder ssisExecutionManager(SSISExecutionManager ssisExecutionManager) throws SQLException {

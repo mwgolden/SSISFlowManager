@@ -98,7 +98,6 @@ public class Main {
                     .ssisEnvironment(ssisEnvironment)
                     .variableDataType(SSISEnvironmentVariableDatatype.String)
                     .variableName("ConnectionString")
-                    .isSensitive(false)
                     .variableValue("Data Source=localhost;Initial Catalog=AdventureWorks;Provider=SQLOLEDB.1;Integrated Security=SSPI;")
                     .build();
             environmentManager.createEnvironmentVariable(environmentVariable);

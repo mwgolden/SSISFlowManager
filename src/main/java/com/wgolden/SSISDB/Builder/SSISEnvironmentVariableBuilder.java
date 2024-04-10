@@ -24,8 +24,8 @@ public class SSISEnvironmentVariableBuilder<T> {
         this.variableDatatype = variableDatatype;
         return this;
     }
-    public SSISEnvironmentVariableBuilder<T> isSensitive(boolean isSensitive){
-        this.isSensitive = isSensitive;
+    public SSISEnvironmentVariableBuilder<T> isSensitive(){
+        this.isSensitive = true;
         return this;
     }
     public SSISEnvironmentVariableBuilder<T> variableValue(T variableValue){
