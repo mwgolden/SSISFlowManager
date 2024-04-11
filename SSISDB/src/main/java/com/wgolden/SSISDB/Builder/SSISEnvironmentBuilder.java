@@ -1,7 +1,7 @@
 package com.wgolden.SSISDB.Builder;
 
-import com.microsoft.sqlserver.jdbc.SQLServerDataSource;
 import com.wgolden.SSISDB.Pojo.SSISEnvironment;
+import com.microsoft.sqlserver.jdbc.SQLServerDataSource;
 
 public class SSISEnvironmentBuilder {
     private  String folderName;

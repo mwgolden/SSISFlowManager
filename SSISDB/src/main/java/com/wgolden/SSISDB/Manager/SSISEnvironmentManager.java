@@ -1,9 +1,7 @@
 package com.wgolden.SSISDB.Manager;
 
 import com.microsoft.sqlserver.jdbc.SQLServerDataSource;
-import com.microsoft.sqlserver.jdbc.SQLServerException;
 import com.wgolden.SSISDB.Pojo.SSISEnvironment;
-import com.wgolden.SSISDB.Pojo.SSISEnvironmentReference;
 import com.wgolden.SSISDB.Pojo.SSISEnvironmentReferenceType;
 import com.wgolden.SSISDB.Pojo.SSISEnvironmentVariable;
 
