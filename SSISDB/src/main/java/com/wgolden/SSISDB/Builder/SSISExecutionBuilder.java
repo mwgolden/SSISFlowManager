@@ -66,8 +66,7 @@ public class SSISExecutionBuilder {
                 (String) this.parameters.get("folder_name"),
                 (String) this.parameters.get("package_name"),
                 executionId,
-                retryCount,
-                this.dataSource);
+                retryCount);
     }
     private void checkError(){
         StringBuilder sb = new StringBuilder();

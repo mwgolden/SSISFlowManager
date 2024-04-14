@@ -81,17 +81,33 @@ public class SSISExecutionManager {
      * @param ssisExecution An instance in the SSISExecution class
      * @throws SQLException if a sql error occurs
      */
-    public void startExecution(SSISExecution ssisExecution) throws RuntimeException{
+    public void startExecution(SSISExecution ssisExecution, SQLServerDataSource dataSource) throws RuntimeException{
         final String startExecutionStmt = """
                     EXECUTE [catalog].[start_execution]
                          @execution_id = ?
                         ,@retry_count = ?
                 """;
-        try(Connection conn = ssisExecution.getDataSource().getConnection();
+        try(Connection conn = dataSource.getConnection();
             CallableStatement cstmt = conn.prepareCall(startExecutionStmt);
         ) {
             cstmt.setLong(1, ssisExecution.getExecutionId());
             cstmt.setInt(2, ssisExecution.getRetryCount());
+            cstmt.execute();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    public void startExecution(long executionId, int retryCount, SQLServerDataSource dataSource) throws RuntimeException{
+        final String startExecutionStmt = """
+                    EXECUTE [catalog].[start_execution]
+                         @execution_id = ?
+                        ,@retry_count = ?
+                """;
+        try(Connection conn = dataSource.getConnection();
+            CallableStatement cstmt = conn.prepareCall(startExecutionStmt);
+        ) {
+            cstmt.setLong(1, executionId);
+            cstmt.setInt(2, retryCount);
             cstmt.execute();
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -104,13 +120,13 @@ public class SSISExecutionManager {
      * @param ssisExecution An instance in the SSISExecution class
      * @throws SQLException if a SQL error occurs
      */
-    public void createExecutionDump(SSISExecution ssisExecution) throws RuntimeException{
+    public void createExecutionDump(SSISExecution ssisExecution, SQLServerDataSource dataSource) throws RuntimeException{
         final String createExecutionDmpStmt = """
                     EXECUTE [catalog].[create_execution_dump]
                          @execution_id = ?
                 """;
 
-        try(Connection conn = ssisExecution.getDataSource().getConnection();
+        try(Connection conn = dataSource.getConnection();
             CallableStatement cstmt = conn.prepareCall(createExecutionDmpStmt);
         ) {
             cstmt.setLong(1, ssisExecution.getExecutionId());
@@ -126,13 +142,13 @@ public class SSISExecutionManager {
      * @param ssisExecution An instance in the SSISExecution class
      * @throws SQLException if a SQL error occurs
      */
-    public void stopExecution(SSISExecution ssisExecution) throws RuntimeException{
+    public void stopExecution(SSISExecution ssisExecution, SQLServerDataSource dataSource) throws RuntimeException{
         final String stopExecutionDmpStmt = """
                     EXECUTE [catalog].[stop_operation]
                          @operation_id = ?
                 """;
 
-        try(Connection conn = ssisExecution.getDataSource().getConnection();
+        try(Connection conn = dataSource.getConnection();
             CallableStatement cstmt = conn.prepareCall(stopExecutionDmpStmt);
         ) {
             cstmt.setLong(1, ssisExecution.getExecutionId());
@@ -148,7 +164,7 @@ public class SSISExecutionManager {
      * @param ssisExecutionParameter    An instance of the SSISExecutionParameter Class
      * @throws SQLException if a SQL error occurs
      */
-    public void setExecutionParameter(SSISExecutionParameter ssisExecutionParameter){
+    public void setExecutionParameter(SSISExecutionParameter ssisExecutionParameter, SQLServerDataSource dataSource){
         final String setExecutionParameterStmt = """
                     EXECUTE [catalog].[set_execution_parameter_value]
                          @execution_id = ?
@@ -156,7 +172,7 @@ public class SSISExecutionManager {
                         ,@parameter_name = ?
                         ,@parameter_value = ?
                 """;
-        try(Connection conn = ssisExecutionParameter.getDataSource().getConnection();
+        try(Connection conn = dataSource.getConnection();
             CallableStatement cstmt = conn.prepareCall(setExecutionParameterStmt);
         ) {
             cstmt.setLong(1, ssisExecutionParameter.getExecutionId());

@@ -33,7 +33,7 @@ public class SsisService {
         this.ssisEnvironmentManager = ssisEnvironmentManager;
         this.ssisExecutionManager = ssisExecutionManager;
     }
-    public <T> long createSSISExecutionWithParams(Execution execution,  ArrayList<ExecutionParameter<T>> params) {
+    public <T> SSISExecution createSSISExecutionWithParams(Execution execution,  ArrayList<ExecutionParameter<T>> params) {
         SSISExecution ssisExecution = null;
         try {
             ssisExecution = new SSISExecutionBuilder()
@@ -51,13 +51,17 @@ public class SsisService {
                         .parameterValue(param.parameterValue())
                         .parameterName(param.parameterName())
                         .build();
-                ssisExecutionManager.setExecutionParameter(parameter);
+                ssisExecutionManager.setExecutionParameter(parameter, sqlServerDataSource);
             }
         } catch (SQLException e) {
             e.printStackTrace();
             throw new RuntimeException(e);
         }
-        return ssisExecution.getExecutionId();
+        return ssisExecution;
+    }
+
+    public void startExecution(long executionId, int retryCount){
+        ssisExecutionManager.startExecution(executionId, retryCount, sqlServerDataSource);
     }
 
     public SQLServerDataSource getSqlServerDataSource() {

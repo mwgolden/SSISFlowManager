@@ -25,7 +25,6 @@ public class SSISExecutionParameterBuilder<T> {
      */
     public SSISExecutionParameterBuilder<T> ssisExecution(SSISExecution ssisExecution) {
         this.executionId = ssisExecution.getExecutionId();
-        this.dataSource = ssisExecution.getDataSource();
         return this;
     }
     /**

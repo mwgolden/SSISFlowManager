@@ -65,9 +65,9 @@ public class Main {
                 .parameterValue(true)
                 .build();
 
-        executionManager.setExecutionParameter(connectionString);
-        executionManager.setExecutionParameter(sync);
-        executionManager.startExecution(ssisExecution);
+        executionManager.setExecutionParameter(connectionString, datasource);
+        executionManager.setExecutionParameter(sync, datasource);
+        executionManager.startExecution(ssisExecution, datasource);
 
 
         //test_run(datasource);
@@ -129,7 +129,7 @@ public class Main {
                     .environmentReferenceId(environmentReference.getEnvironmentReferenceId())
                     .build();
 
-            ssisExecutionManager.startExecution(ssisExecution);
+            ssisExecutionManager.startExecution(ssisExecution, datasource);
         } catch (RuntimeException | SQLException e) {
             throw new RuntimeException(e);
         }
@@ -176,8 +176,8 @@ public class Main {
                 .ssisExecution(ssisExecution)
                 .build();
 
-        executionManager.setExecutionParameter(param);
-        executionManager.setExecutionParameter(logging);
-        executionManager.startExecution(ssisExecution);
+        executionManager.setExecutionParameter(param, dataSource);
+        executionManager.setExecutionParameter(logging, dataSource);
+        executionManager.startExecution(ssisExecution, dataSource);
     }
 }
